@@ -59,9 +59,13 @@ func (s *Server) StopPodSandbox(ctx context.Context, req *pb.StopPodSandboxReque
 			if c.ID() == podInfraContainer.ID() {
 				continue
 			}
-			if err := s.Runtime().StopContainer(ctx, c, 10); err != nil {
-				return nil, fmt.Errorf("failed to stop container %s in pod sandbox %s: %v", c.Name(), sb.ID(), err)
-			}
+			timeout := int64(10)
+                        if err := s.Runtime().StopContainer(ctx, c, timeout); err != nil {
+                                return nil, fmt.Errorf("failed to stop container %s in pod sandbox %s: %v", c.Name(), sb.ID(), err)
+                        }
+                        if err := s.Runtime().WaitContainerStateStopped(ctx, c, timeout); err != nil {
+                                return nil, fmt.Errorf("failed to get container 'stopped' status %s in pod sandbox %s: %v", c.Name(), sb.ID(), err)
+                        }
 			if err := s.StorageRuntimeServer().StopContainer(c.ID()); err != nil && errors.Cause(err) != storage.ErrContainerUnknown {
 				// assume container already umounted
 				logrus.Warnf("failed to stop container %s in pod sandbox %s: %v", c.Name(), sb.ID(), err)
