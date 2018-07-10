@@ -612,6 +612,10 @@ func waitContainerStop(ctx context.Context, c *Container, timeout time.Duration)
 // the container status to be updated to 'stopped'. Either it gets the expected
 // status and returns nil, or it reaches the timeout and returns an error.
 func (r *Runtime) WaitContainerStateStopped(ctx context.Context, c *Container, timeout int64) (err error) {
+	if timeout < 30 {
+		timeout = 30
+	}
+
 	// No need to go further and spawn the go routine if the container
 	// is already in the expected status.
 	if r.ContainerStatus(c).Status == ContainerStateStopped {
