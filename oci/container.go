@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/containers/storage/pkg/idtools"
@@ -17,7 +18,8 @@ import (
 )
 
 const (
-	defaultStopSignal = "TERM"
+	defaultStopSignal    = "TERM"
+	defaultStopSignalInt = 15
 )
 
 // Container represents a runtime container.
@@ -128,6 +130,20 @@ func (c *Container) GetStopSignal() string {
 		return defaultStopSignal
 	}
 	return cleanSignal
+}
+
+// GetStopSignalInt returns the container's own stop signal configured from
+// the image configuration or the default one.
+func (c *Container) GetStopSignalInt() syscall.Signal {
+	if c.stopSignal == "" {
+		return defaultStopSignalInt
+	}
+	cleanSignal := strings.TrimPrefix(strings.ToUpper(c.stopSignal), "SIG")
+	sig, ok := signal.SignalMap[cleanSignal]
+	if !ok {
+		return defaultStopSignalInt
+	}
+	return sig
 }
 
 // FromDisk restores container's state from disk
