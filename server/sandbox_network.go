@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	cnitypes "github.com/containernetworking/cni/pkg/types"
+	cnitypes "github.com/containernetworking/cni/pkg/types/current"
 	"github.com/kubernetes-sigs/cri-o/lib/sandbox"
 	"github.com/sirupsen/logrus"
 	"k8s.io/kubernetes/pkg/kubelet/dockershim/network/hostport"
