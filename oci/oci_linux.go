@@ -12,6 +12,7 @@ import (
 
 	"github.com/containerd/cgroups"
 	"github.com/kubernetes-sigs/cri-o/utils"
+	metrics "github.com/kubernetes-sigs/cri-o/utils/cgroups"
 	"github.com/opencontainers/runc/libcontainer"
 	rspec "github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
@@ -112,7 +113,7 @@ func containerStats(ctr *Container) (*ContainerStats, error) {
 	return stats, nil
 }
 
-func metricsToCtrStats(c *Container, m *cgroups.Metrics) *ContainerStats {
+func metricsToCtrStats(c *Container, m *metrics.Metrics) *ContainerStats {
 	var (
 		cpu         float64
 		cpuNano     uint64
